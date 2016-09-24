@@ -4,3 +4,6 @@
 [submodule "inc/mathjax"]
 	path = inc/mathjax
 	url = git@github.com:zackw/minify-mathjax
+[submodule "inc/html5shiv"]
+	path = inc/html5shiv
+	url = https://github.com/aFarkas/html5shiv/

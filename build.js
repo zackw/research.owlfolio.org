@@ -2,13 +2,15 @@
 
 "use strict";
 
+const path       = require('path');
+
 const Metalsmith = require('metalsmith');
 const ms_sass    = require('metalsmith-sass');
 const ms_concat  = require('metalsmith-concat');
 const ms_ccss    = require('metalsmith-clean-css');
 const ms_inplace = require('metalsmith-in-place');
 const ms_gzip    = require('metalsmith-gzip');
-const ms_renamer = require('metalsmith-renamer');
+const ms_copy    = require('metalsmith-copy');
 const ms_ugli    = require('metalsmith-uglify');
 
 const ms_submod  = require('./lib/submodules.js');
@@ -27,6 +29,8 @@ Metalsmith(__dirname)
     ])
     .use(ms_submod({
         "inc/normalize": { include: ["normalize.css"],
+                           dest:    "s" },
+        "inc/html5shiv": { include: ["dist/html5shiv-printshiv.js"],
                            dest:    "s" },
         "inc/mathjax":   { include: ["MathJax.*/**"],
                            dest:    "s",
@@ -58,11 +62,15 @@ Metalsmith(__dirname)
         pattern: "**/*.js.hbs",
         engine: "handlebars"
     }))
+
     // inplace doesn't know how to strip off a .hbs suffix
-    .use(ms_renamer({
-        js: { pattern: "**/*.js.hbs",
-              rename: (old) => old.slice(0, -4) }
-    }))
+    .use(ms_copy({ pattern: "**/*.js.hbs", move: true,
+                   transform: (old) => old.slice(0, -4) }))
+    // html5shiv.js winds up in the wrong place
+    .use(ms_copy({ pattern: "**/s/dist/**", move: true,
+                   transform: (old) => old.replace(/(^|\/)s\/dist(\/|$)/,
+                                                   "$1s$2") }))
+
     .use(ms_ugli({
         nameTemplate: '[name].[ext]' // uglify in place
     }))
