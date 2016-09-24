@@ -1,0 +1,29 @@
+{
+    "source": "src",
+    "destination": "rendered",
+    "plugins": [
+        { "lib/submodules.js": {
+            "inc/normalize": { "include": ["normalize.css"],
+                               "dest": "s" }
+        } },
+        { "metalsmith-ignore": [
+            "**/*~", "**/#*#", "**/.#*",
+            "s/f/*.LICENSE" ] },
+        { "metalsmith-sass": { "outputStyle": "expanded" } },
+        { "metalsmith-concat": {
+            "files": [ "s/f/MostraNuova-Regular.css",
+                       "s/normalize.css",
+                       "s/main.css" ],
+            "output": "s/style.css"
+        } },
+        { "metalsmith-clean-css": {
+            "files": [ "s/style.css" ],
+            "cleanCSS": { "keepSpecialComments": 0 }
+        } },
+        { "metalsmith-gzip": {
+            "src": ["**/*.html", "**/*.txt", "**/*.json", "**/*.svg",
+                    "**/*.css", "**/*.css.map",
+                    "**/*.js", "**/*.js.map"]
+        } }
+    ]
+}
