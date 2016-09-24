@@ -1,7 +1,6 @@
 #! /usr/bin/env node
 
 const Metalsmith = require('metalsmith');
-const ms_ignore  = require('metalsmith-ignore');
 const ms_sass    = require('metalsmith-sass');
 const ms_concat  = require('metalsmith-concat');
 const ms_ccss    = require('metalsmith-clean-css');
@@ -17,14 +16,17 @@ Metalsmith(__dirname)
     })
     .source('src')
     .destination('rendered')
-    .use(ms_submod({
-        "inc/normalize": { "include": ["normalize.css"],
-                           "dest": "s" }
-    }))
-    .use(ms_ignore([
+    .ignore([
         "**/*~", "**/#*#", "**/.#*",
-        "s/f/*.LICENSE"
-    ]))
+        "**/s/f/*.LICENSE"
+    ])
+    .use(ms_submod({
+        "inc/normalize": { include: ["normalize.css"],
+                           dest:    "s" },
+        "inc/mathjax":   { include: ["MathJax.*/**"],
+                           dest:    "s",
+                           precmd:  "./minify" }
+    }))
     .use(ms_sass({
         outputStyle: "expanded"
     }))
@@ -51,5 +53,4 @@ Metalsmith(__dirname)
 // Local Variables:
 // js2-skip-preprocessor-directives: t
 // End:
-/*global require,__dirname*/
-
+/*global require, __dirname*/
