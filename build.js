@@ -1,10 +1,15 @@
 #! /usr/bin/env node
 
+"use strict";
+
 const Metalsmith = require('metalsmith');
 const ms_sass    = require('metalsmith-sass');
 const ms_concat  = require('metalsmith-concat');
 const ms_ccss    = require('metalsmith-clean-css');
+const ms_inplace = require('metalsmith-in-place');
 const ms_gzip    = require('metalsmith-gzip');
+const ms_renamer = require('metalsmith-renamer');
+const ms_ugli    = require('metalsmith-uglify');
 
 const ms_submod  = require('./lib/submodules.js');
 
@@ -25,8 +30,15 @@ Metalsmith(__dirname)
                            dest:    "s" },
         "inc/mathjax":   { include: ["MathJax.*/**"],
                            dest:    "s",
-                           precmd:  "./minify" }
+                           precmd:  "./minify",
+                           precmd_stdout: (stdout, metalsmith) => {
+                               metalsmith.metadata()['MATHJAX_DIR'] =
+                                   stdout.trim();
+                           }
+                         }
     }))
+
+    // CSS-specific operations
     .use(ms_sass({
         outputStyle: "expanded"
     }))
@@ -40,6 +52,22 @@ Metalsmith(__dirname)
         files: [ "s/style.css" ],
         cleanCSS: { "keepSpecialComments": 0 }
     }))
+
+    // JavaScript-specific operations
+    .use(ms_inplace({
+        pattern: "**/*.js.hbs",
+        engine: "handlebars"
+    }))
+    // inplace doesn't know how to strip off a .hbs suffix
+    .use(ms_renamer({
+        js: { pattern: "**/*.js.hbs",
+              rename: (old) => old.slice(0, -4) }
+    }))
+    .use(ms_ugli({
+        nameTemplate: '[name].[ext]' // uglify in place
+    }))
+
+    // Final global operations
     .use(ms_gzip({
         src: ["**/*.html", "**/*.txt", "**/*.json", "**/*.svg",
               "**/*.css", "**/*.css.map",
