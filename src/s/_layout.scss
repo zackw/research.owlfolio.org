@@ -59,7 +59,7 @@ nav ul, nav ol { list-style: none }
 
 /* Overall layout */
 body {
-  background: url("chevrons-b.svg") #e0e6ea;
+  background: url("/s/chevrons-b.svg") #e0e6ea;
 }
 
 #main {
@@ -71,7 +71,7 @@ body {
   border-width: 18px 0 0 18px;
   border-style: solid;
   border-color: transparent;
-  border-image-source: url(corner.svg);
+  border-image-source: url("/s/corner.svg");
   border-image-slice: 18 0 0 83;
   border-image-width: 18px 0 0 83px;
   border-image-outset: 0 0 0 65px;
@@ -140,8 +140,8 @@ body {
       /* The owl is coded here because it appears under the left margin of
          the banner, which you can't do with a background on the
          banner itself. */
-      background: url("cbot-owl.svg") 7px 6px no-repeat,
-                  url("chevrons-b.svg"),
+      background: url("/s/cbot-owl.svg") 7px 6px no-repeat,
+                  url("/s/chevrons-b.svg"),
                   #e0e6ea;
     }
     #banner, #content-info {

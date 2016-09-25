@@ -23,13 +23,13 @@
  */
 
 @font-face {
-    font-family: 'Mostra Nuova';
-    src: url('f/MostraNuova-Regular.eot');
-    src: url('f/MostraNuova-Regular.eot?#iefix') format('embedded-opentype'),
-         url('f/MostraNuova-Regular.woff2') format('woff2'),
-         url('f/MostraNuova-Regular.woff') format('woff'),
-         url('f/MostraNuova-Regular.ttf') format('truetype'),
-         url('f/MostraNuova-Regular.svg#mostra_nuova_regular') format('svg');
+    font-family: "Mostra Nuova";
+    src: url("/s/f/MostraNuova-Regular.eot");
+    src: url("/s/f/MostraNuova-Regular.eot?#iefix") format("embedded-opentype"),
+         url("/s/f/MostraNuova-Regular.woff2") format("woff2"),
+         url("/s/f/MostraNuova-Regular.woff") format("woff"),
+         url("/s/f/MostraNuova-Regular.ttf") format("truetype"),
+         url("/s/f/MostraNuova-Regular.svg#mostra_nuova_regular") format("svg");
     font-weight: normal;
     font-style: normal;
 }
