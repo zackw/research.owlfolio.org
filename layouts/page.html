@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  <title>{{ title }} | Owl’s Portfolio</title>
+  <!--[if lt IE 9]><script src="/s/html5shiv-printshiv.js"></script><![endif]-->
+  <link rel="stylesheet" href="/s/style.css">
+</head>
+<body>
+  <header id="banner" role="banner">
+    <h1 id="brand"><a href="/">Readings in Information Security</a></h1>
+    <nav class="topbar">
+      <ul class="topbar-left">
+        <li class="menu"><a href="https://www.owlfolio.org/">Owl’s Portfolio</a></li>
+        <li class="menu"><a href="https://www.owlfolio.org/introduction/">About</a></li>
+        <li class="menu"><a href="https://www.owlfolio.org/contact/">Contact</a></li>
+      </ul>
+      <ul class="topbar-right">
+        <li class="menu"><a href="https://readings.owlfolio.org/">Readings</a></li>
+        <li class="menu"><a href="https://research.owlfolio.org/pubs/">Publications</a></li>
+        <li class="menu"><a href="https://www.flickr.com/photos/zackw/">Photography</a></li></ul>
+    </nav>
+  </header>
+  <div id="main" role="main">
+    <article class="hentry">
+      <header class="post-header">
+        <h1 class="entry-title">{{ title }}</h1>
+      </header>
+      <div class="entry-contents">
+        {{{ contents }}}
+      </div>
+    </article>
+  </div>
+  <div id="sidebars">
+    <nav class="widget">
+      <h3><a href="//www.owlfolio.org/">« Owl’s Portfolio</a></h3>
+    </nav>
+  </div>
+  <footer id="content-info" class="copy" role="contentinfo">
+    <a href="http://creativecommons.org/licenses/by-nc/4.0/"
+       ><img width="80" height="15" src="/s/cc-by-nc-4-80x15.png"
+             alt="[(cc) BY-NC]"></a>
+    All material
+    © <address class="vcard"><a href="//www.owlfolio.org/about/"
+                                class="url fn">Zack Weinberg</a></address>
+    and collaborators.  Unless otherwise stated,
+    reusable according to the terms of the
+    <a href="http://creativecommons.org/licenses/by-nc/4.0/"
+       rel="license">Creative Commons Attribution-Noncommercial 4.0 license</a>.
+    </footer>
+    <script src="/s/maybe-load-mathjax.js"></script>
+</body>
+</html>

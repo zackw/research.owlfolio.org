@@ -5,12 +5,13 @@
 const path       = require('path');
 
 const Metalsmith = require('metalsmith');
-const ms_sass    = require('metalsmith-sass');
-const ms_concat  = require('metalsmith-concat');
 const ms_ccss    = require('metalsmith-clean-css');
-const ms_inplace = require('metalsmith-in-place');
-const ms_gzip    = require('metalsmith-gzip');
+const ms_concat  = require('metalsmith-concat');
 const ms_copy    = require('metalsmith-copy');
+const ms_gzip    = require('metalsmith-gzip');
+const ms_inplace = require('metalsmith-in-place');
+const ms_layout  = require('metalsmith-layouts');
+const ms_sass    = require('metalsmith-sass');
 const ms_ugli    = require('metalsmith-uglify');
 
 const ms_submod  = require('./lib/submodules.js');
@@ -40,6 +41,13 @@ Metalsmith(__dirname)
                                    stdout.trim();
                            }
                          }
+    }))
+
+    // HTML-specific operations
+    .use(ms_layout({
+        pattern: "**/*.html",
+        engine: "handlebars",
+        default: "page.html"
     }))
 
     // CSS-specific operations
