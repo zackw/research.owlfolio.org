@@ -1,5 +1,6 @@
 node_modules/
-rendered/
+render_d/
+render_p/
 *~
 \#*#
 .#*

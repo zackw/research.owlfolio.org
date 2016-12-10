@@ -2,28 +2,29 @@
 
 "use strict";
 
-const path       = require('path');
+const argparse   = require("argparse");
+const path       = require("path");
 
-const Metalsmith = require('metalsmith');
-const ms_ccss    = require('metalsmith-clean-css');
-const ms_concat  = require('metalsmith-concat');
-const ms_copy    = require('metalsmith-copy');
-const ms_gzip    = require('metalsmith-gzip');
-const ms_inplace = require('metalsmith-in-place');
-const ms_layout  = require('metalsmith-layouts');
-const ms_sass    = require('metalsmith-sass');
-const ms_ugli    = require('metalsmith-uglify');
+const Metalsmith = require("metalsmith");
+const ms_ccss    = require("metalsmith-clean-css");
+const ms_concat  = require("metalsmith-concat");
+const ms_copy    = require("metalsmith-copy");
+const ms_express = require("metalsmith-express");
+const ms_gzip    = require("metalsmith-gzip");
+const ms_inplace = require("metalsmith-in-place");
+const ms_layout  = require("metalsmith-layouts");
+const ms_sass    = require("metalsmith-sass");
+const ms_ugli    = require("metalsmith-uglify");
+const ms_watch   = require("metalsmith-watch");
 
-const ms_submod  = require('./lib/submodules.js');
+const ms_submod  = require("./lib/submodules.js");
 
-Metalsmith(__dirname)
-    .metadata({
-        title: "",
-        description: "",
-        author: ""
-    })
-    .source('src')
-    .destination('rendered')
+function content_pipeline(options)
+{
+    let ms = Metalsmith(__dirname)
+    .metadata(options.meta)
+    .clean(true)
+    .source("src")
     .ignore([
         "**/*~", "**/#*#", "**/.#*",
         "**/s/f/*.LICENSE"
@@ -37,7 +38,7 @@ Metalsmith(__dirname)
                            dest:    "s",
                            precmd:  "./minify",
                            precmd_stdout: (stdout, metalsmith) => {
-                               metalsmith.metadata()['MATHJAX_DIR'] =
+                               metalsmith.metadata()["MATHJAX_DIR"] =
                                    stdout.trim();
                            }
                          }
@@ -60,10 +61,6 @@ Metalsmith(__dirname)
                  "s/main.css" ],
         output: "s/style.css"
     }))
-    .use(ms_ccss({
-        files: [ "s/style.css" ],
-        cleanCSS: { "keepSpecialComments": 0 }
-    }))
 
     // JavaScript-specific operations
     .use(ms_inplace({
@@ -77,22 +74,110 @@ Metalsmith(__dirname)
     // html5shiv.js winds up in the wrong place
     .use(ms_copy({ pattern: "**/s/dist/**", move: true,
                    transform: (old) => old.replace(/(^|\/)s\/dist(\/|$)/,
-                                                   "$1s$2") }))
+                                                   "$1s$2") }));
 
-    .use(ms_ugli({
-        nameTemplate: '[name].[ext]' // uglify in place
+    if (options.minify)
+        ms = ms
+        .use(ms_ccss({
+            files: [ "s/style.css" ],
+            cleanCSS: { "keepSpecialComments": 0 }
+        }))
+        .use(ms_ugli({
+            nameTemplate: "[name].[ext]" // uglify in place
+        }))
+        .use(ms_gzip({
+            src: ["**/*.html", "**/*.txt", "**/*.json", "**/*.svg",
+                  "**/*.css", "**/*.css.map",
+                  "**/*.js", "**/*.js.map"]
+        }));
+
+    return ms;
+}
+
+function do_build(args)
+{
+    let ORIGIN, livereload, minify, destination;
+    if (args.production) {
+        ORIGIN = "https://research.owlfolio.org";
+        livereload = false;
+        minify = true;
+        destination = "render_p";
+    } else {
+        ORIGIN = "http://localhost:8000";
+        livereload = true;
+        minify = args.minify;
+        destination = "render_d";
+    }
+
+    content_pipeline({ meta: { ORIGIN: ORIGIN, livereload: livereload },
+                       minify: minify })
+    .destination(destination)
+    .build((err, files) => {
+        if (err) throw err;
+    });
+}
+
+function do_devserver(args)
+{
+    content_pipeline({ meta: { ORIGIN: "http://localhost:8000",
+                               livereload: true },
+                       minify: args.minify })
+    .destination("render_d")
+    .use(ms_watch({
+        paths: {
+            // Some of the pipeline steps can't handle partial rebuilds.
+            "${source}/**/*": "**/*",
+            "layouts/**/*": "**/*"
+        },
+        livereload: true
     }))
-
-    // Final global operations
-    .use(ms_gzip({
-        src: ["**/*.html", "**/*.txt", "**/*.json", "**/*.svg",
-              "**/*.css", "**/*.css.map",
-              "**/*.js", "**/*.js.map"]
+    .use(ms_express({
+        host: 'localhost',
+        port: 8000
     }))
     .build((err, files) => {
         if (err) throw err;
     });
+}
 
+function main()
+{
+    var ap = new argparse.ArgumentParser({
+        addHelp: true,
+        description: "Build script."
+    });
+    var sp = ap.addSubparsers({
+        title: "operation",
+        dest: "operation"
+    });
+
+    var bp = sp.addParser("build", { addHelp: true });
+    bp.addArgument(["-p", "--production"], {
+        action: "storeTrue",
+        help: "Build for production website.  Implies -m."
+    });
+    bp.addArgument(["-m", "--minify"], {
+        action: "storeTrue",
+        help: "Enable minification."
+    });
+
+    var dp = sp.addParser("devserver", { addHelp: true });
+    dp.addArgument(["-m", "--minify"], {
+        action: "storeTrue",
+        help: "Enable minification."
+    });
+
+    var args = ap.parseArgs();
+    if (args.operation === "build") {
+        do_build(args);
+    } else if (args.operation === "devserver") {
+        do_devserver(args);
+    } else {
+        ap.error("Unrecognized operation: '" + args.operation + "'");
+    }
+}
+
+main();
 
 // Local Variables:
 // js2-skip-preprocessor-directives: t
