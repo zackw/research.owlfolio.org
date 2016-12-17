@@ -9,6 +9,7 @@ const Metalsmith = require("metalsmith");
 const ms_ccss    = require("metalsmith-clean-css");
 const ms_concat  = require("metalsmith-concat");
 const ms_copy    = require("metalsmith-copy");
+const ms_default = require("metalsmith-default-values");
 const ms_express = require("metalsmith-express");
 const ms_gzip    = require("metalsmith-gzip");
 const ms_inplace = require("metalsmith-in-place");
@@ -18,6 +19,52 @@ const ms_ugli    = require("metalsmith-uglify");
 const ms_watch   = require("metalsmith-watch");
 
 const ms_submod  = require("./lib/submodules.js");
+
+function prepare_hbs()
+{
+    let cons = require('consolidate');
+    let Handlebars = require('handlebars');
+    cons.requires.handlebars = Handlebars;
+
+    Handlebars.registerHelper('link_unless_self', (slug, dest, text) => {
+        text = Handlebars.escapeExpression(text);
+        if (slug === dest) {
+            return new Handlebars.SafeString(
+                '<span class="this-page">' + text + '</span>'
+            );
+        } else {
+            dest = Handlebars.escapeExpression(dest);
+            return new Handlebars.SafeString(
+                '<a href="' + dest + '">' + text + '</a>'
+            );
+        }
+    });
+
+    Handlebars.registerHelper('livereload_hook', (context) => {
+        if (context.livereload) {
+            return new Handlebars.SafeString(
+                '<script src="http://localhost:35729/livereload.js"></script>'
+            );
+        } else {
+            return '';
+        }
+    });
+
+    Handlebars.registerHelper('expand_cc', (license) => {
+        const labels = {
+            'by':       'Attribution',
+            'by-nd':    'Attribution-NoDerivatives',
+            'by-sa':    'Attribution-ShareAlike',
+            'by-nc':    'Attribution-NonCommercial',
+            'by-nc-nd': 'Attribution-NonCommercial-NoDerivatives',
+            'by-nc-sa': 'Attribution-NonCommercial-ShareAlike'
+        };
+        let label = labels[license];
+        if (label) return label;
+        return '[*** Unrecognized license tag "' + license + '"]';
+    });
+
+}
 
 function content_pipeline(options)
 {
@@ -29,6 +76,13 @@ function content_pipeline(options)
         "**/*~", "**/#*#", "**/.#*",
         "**/s/f/*.LICENSE"
     ])
+    .use(ms_default([
+        { pattern: "**/*",
+          defaults: {
+              license: "by-nc"
+          }
+        }
+    ]))
     .use(ms_submod({
         "inc/normalize": { include: ["normalize.css"],
                            dest:    "s" },
@@ -168,6 +222,9 @@ function main()
     });
 
     var args = ap.parseArgs();
+
+    prepare_hbs();
+
     if (args.operation === "build") {
         do_build(args);
     } else if (args.operation === "devserver") {

@@ -13,12 +13,12 @@
     <nav class="topbar">
       <ul class="topbar-left">
         <li class="menu"><a href="https://www.owlfolio.org/">Owl’s Portfolio</a></li>
-        <li class="menu"><a href="https://www.owlfolio.org/introduction/">About</a></li>
+        <li class="menu"><a href="https://www.owlfolio.org/about/">About</a></li>
         <li class="menu"><a href="https://www.owlfolio.org/contact/">Contact</a></li>
       </ul>
       <ul class="topbar-right">
         <li class="menu"><a href="https://readings.owlfolio.org/">Readings</a></li>
-        <li class="menu"><a href="https://research.owlfolio.org/pubs/">Publications</a></li>
+        <li class="menu">{{link_unless_self slug "/pubs/" "Publications"}}</li>
         <li class="menu"><a href="https://www.flickr.com/photos/zackw/">Photography</a></li></ul>
     </nav>
   </header>
@@ -38,18 +38,18 @@
     </nav>
   </div>
   <footer id="content-info" class="copy" role="contentinfo">
-    <a href="http://creativecommons.org/licenses/by-nc/4.0/"
-       ><img width="80" height="15" src="/s/cc-by-nc-4-80x15.png"
-             alt="[(cc) BY-NC]"></a>
+    <a href="http://creativecommons.org/licenses/{{license}}/4.0/"
+       ><img width="80" height="15" src="/s/cc-{{license}}-4-80x15.png"
+             alt="[(cc) {{license}}]"></a>
     All material
     © <address class="vcard"><a href="//www.owlfolio.org/about/"
                                 class="url fn">Zack Weinberg</a></address>
     and collaborators.  Unless otherwise stated,
     reusable according to the terms of the
-    <a href="http://creativecommons.org/licenses/by-nc/4.0/"
-       rel="license">Creative Commons Attribution-Noncommercial 4.0 license</a>.
+    <a href="http://creativecommons.org/licenses/{{license}}/4.0/"
+       rel="license">Creative Commons {{expand_cc license}} 4.0 license</a>.
     </footer>
     <script src="/s/maybe-load-mathjax.js"></script>
-    {{#if livereload}}<script src="http://localhost:35729/livereload.js"></script>{{/if}}
+    {{livereload_hook .}}
 </body>
 </html>

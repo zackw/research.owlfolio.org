@@ -50,6 +50,10 @@ address { display: inline }
 p {
   margin: 0 0 0.5em 0;
 }
+p.bibitem {
+  padding-left: 2em;
+  text-indent: -2em;
+}
 blockquote, pre {
   font-size: 95%;
   background-color: $bgcolor_main_alt;
